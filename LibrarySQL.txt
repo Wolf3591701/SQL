@@ -1,0 +1,75 @@
+CREATE DATABASE Library;
+
+CREATE TABLE LIBUSER (
+	Id uniqueidentifier PRIMARY KEY NOT NULL,
+	FirstName varchar(25) NOT NULL,
+	LastName varchar(50) NOT NULL,
+	);
+
+CREATE TABLE USERINFO (
+	Id uniqueidentifier PRIMARY KEY NOT NULL,
+	PrimaryAddress varchar(100),
+	Birthday datetime,
+	CONSTRAINT FK_USERINFO_LIBUSER_ID FOREIGN KEY (Id) REFERENCES LIBUSER (Id)
+);
+
+declare @id as uniqueidentifier set @id=newid();
+
+INSERT INTO LIBUSER VALUES (@id,'Marko','Polo');
+INSERT INTO USERINFO VALUES (@id, 'Poljska 51', '1988-05-05 10:00:00');
+
+declare @id as uniqueidentifier set @id=newid();
+
+INSERT INTO LIBUSER VALUES (@id,'Robert','Altman');
+INSERT INTO USERINFO VALUES (@id, 'Drinska 41', '1985-10-05 10:00:00');
+
+declare @id as uniqueidentifier set @id=newid();
+
+INSERT INTO LIBUSER VALUES (@id,'Ana','Romanov');
+INSERT INTO USERINFO VALUES (@id, 'Parna 22', '1972-10-11 10:00:00');
+
+
+CREATE TABLE BOOK (
+	Id uniqueidentifier PRIMARY KEY NOT NULL,
+	Title varchar(100) NOT NULL,
+	Published date,
+	LibUserId uniqueidentifier,
+	CONSTRAINT FK_BOOK_Id_LIBUSER_Id FOREIGN KEY (LibUserId) REFERENCES LIBUSER (Id) 
+);
+
+CREATE TABLE AUTHOR (
+	Id uniqueidentifier PRIMARY KEY NOT NULL,
+	AuthorName varchar(100) NOT NULL,
+	Nationality varchar(50)
+);
+
+CREATE TABLE BOOKAUTHOR (
+	Id uniqueidentifier PRIMARY KEY NOT NULL,
+	BookId uniqueidentifier NOT NULL,
+	AuthorId uniqueidentifier NOT NULL,
+	CONSTRAINT FK_BookId FOREIGN KEY (BookId) REFERENCES BOOK (Id),
+	CONSTRAINT FK_AuthorId FOREIGN KEY (AuthorId) REFERENCES AUTHOR (Id)
+);
+
+declare @id as uniqueidentifier set @id=newid();
+
+INSERT INTO BOOK VALUES (@id, 'Nestali', '1991-11-7');
+INSERT INTO AUTHOR VALUES (@id, 'Robert Pitkov', 'UK');
+
+declare @id as uniqueidentifier set @id=newid();
+
+INSERT INTO BOOK VALUES (@id, 'Pronadjeni', '1971-12-4');
+INSERT INTO AUTHOR VALUES (@id, 'Ivana Brlic-Mazuranic', 'HR');
+
+
+
+
+
+
+
+
+
+
+
+
+
