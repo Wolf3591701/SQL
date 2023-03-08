@@ -1,0 +1,27 @@
+CREATE DATABASE Factory;
+
+USE Factory;
+
+CREATE TABLE CARBRAND (
+	Id uniqueidentifier PRIMARY KEY NOT NULL,
+	Named varchar(50) NOT NULL
+);
+
+CREATE TABLE CARMODEL (
+	Id uniqueidentifier PRIMARY KEY NOT NULL,
+	Named varchar(50) NOT NULL,
+	CarBrandId uniqueidentifier NOT NULL
+	CONSTRAINT FK_CARBRAND_CARMODEL_CarBrandId FOREIGN KEY (CarBrandId) REFERENCES CARBRAND (Id)
+);
+
+
+INSERT INTO CARBRAND VALUES
+	(newid(),'Opel'),
+	(newid(),'Renault'),
+	(newid(),'Ford');
+
+
+INSERT INTO CARMODEL VALUES
+	(newid(),'Corsa',(SELECT Id FROM CARBRAND WHERE Named='Opel')),
+	(newid(),'Focus',(SELECT Id FROM CARBRAND WHERE Named='Ford')),
+	(newid(),'Megane',(SELECT Id FROM CARBRAND WHERE Named='Renault'));
