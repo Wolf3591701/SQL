@@ -4,7 +4,7 @@ USE Factory;
 
 CREATE TABLE CARBRAND (
 	Id uniqueidentifier PRIMARY KEY NOT NULL,
-	Named varchar(50) NOT NULL
+	BrandName varchar(50) NOT NULL
 );
 
 CREATE TABLE CARMODEL (
@@ -22,9 +22,13 @@ INSERT INTO CARBRAND VALUES
 
 
 INSERT INTO CARMODEL VALUES
-	(newid(),'Corsa',(SELECT Id FROM CARBRAND WHERE Named='Opel')),
-	(newid(),'Focus',(SELECT Id FROM CARBRAND WHERE Named='Ford')),
-	(newid(),'Megane',(SELECT Id FROM CARBRAND WHERE Named='Renault'));
+(newid(),'Corsa',(SELECT Id FROM CARBRAND WHERE BrandName='Opel')),
+(newid(),'Focus',(SELECT Id FROM CARBRAND WHERE BrandName='Ford')),
+(newid(),'Megane',(SELECT Id FROM CARBRAND WHERE BrandName='Renault'));
+
+INSERT INTO CARMODEL (Id, Named, CarBrandId) VALUES
+	(newid(),'Clio',(SELECT Id FROM CARBRAND WHERE BrandName='Renault')),
+	(newid(),'Astra',(SELECT Id FROM CARBRAND WHERE BrandName='Opel'));
 
 
 --CRUD
@@ -37,23 +41,27 @@ VALUES (NEWID(), 'Camry', (SELECT Id FROM CARBRAND WHERE Named='Toyota'));
 
 -- READ
 SELECT * FROM CARBRAND 
+
+SELECT * FROM CARMODEL
+ORDER BY NumberSold DESC;
+
 -- Inner Join
-SELECT CARMODEL.Id, CARMODEL.Named AS ModelName, CARBRAND.Named AS BrandName
+SELECT CARMODEL.Named AS ModelName, CARBRAND.BrandName AS BrandName, CARMODEL.NumberSold AS NumberSold
 FROM CARMODEL
 INNER JOIN CARBRAND ON CARMODEL.CarBrandId = CARBRAND.Id;
 
 -- Left Join
-SELECT CARMODEL.Id, CARMODEL.Named AS ModelName, CARBRAND.Named AS BrandName
+SELECT CARMODEL.Id, CARMODEL.Named AS ModelName, CARBRAND.BrandName AS BrandName, CARMODEL.NumberSold AS NumberSold
 FROM CARMODEL
 LEFT JOIN CARBRAND ON CARMODEL.CarBrandId = CARBRAND.Id;
 
 -- Right Join
-SELECT CARMODEL.Id, CARMODEL.Named AS ModelName, CARBRAND.Named AS BrandName
+SELECT CARMODEL.Id, CARMODEL.Named AS ModelName, CARBRAND.BrandName AS BrandName, CARMODEL.NumberSold AS NumberSold
 FROM CARMODEL
 RIGHT JOIN CARBRAND ON CARMODEL.CarBrandId = CARBRAND.Id;
 
 -- Full Outer Join
-SELECT CARMODEL.Id, CARMODEL.Named AS ModelName, CARBRAND.Named AS BrandName
+SELECT CARMODEL.Id, CARMODEL.Named AS ModelName, CARBRAND.BrandName AS BrandName, CARMODEL.NumberSold AS NumberSold
 FROM CARMODEL
 FULL OUTER JOIN CARBRAND ON CARMODEL.CarBrandId = CARBRAND.Id;
 
@@ -64,4 +72,32 @@ WHERE Named = 'Focus';
 
 -- DELETE
 DELETE FROM CARBRAND
-WHERE Named = 'Opel';
+WHERE BrandName = 'Opel';
+
+CREATE VIEW "MODELOVERVIEW" AS (
+SELECT na.BrandName, nm.Named, nm.NumberSold
+FROM CARBRAND na
+INNER JOIN CARMODEL nm ON nm.CarBrandId=na.Id
+);
+
+
+--CREATE RANDOM NUMBER GENERATOR FUNCTION AND USE IT AS COLUMN IN TABLE CARMODEL (SIMULATES LOTTERY DRAW)
+
+CREATE FUNCTION LuckyCarLottery (@minValue int, @maxValue int, @rand float)
+returns int
+AS
+BEGIN
+declare @value int;
+set @value=(SELECT FLOOR(@rand*(@maxValue-@minValue+1))+@minValue);
+return @value;
+END;
+
+--Call random number generator function -> (SELECT dbo.LuckyCarLottery (1,100,rand()));
+
+ALTER TABLE CARMODEL
+ADD Winner int;
+
+UPDATE CARMODEL
+SET Winner=(SELECT dbo.LuckyCarLottery (1,100,rand()))
+WHERE Winner IS NULL;
+
