@@ -62,6 +62,17 @@ UPDATE CARMODEL
 SET Named = 'Fiesta'
 WHERE Named = 'Focus';
 
+ALTER TABLE CARMODEL ADD NumberSold int;
+
+UPDATE CARMODEL
+SET NumberSold = 50 WHERE Named = 'Corsa';
+
+UPDATE CARMODEL
+SET NumberSold = 150 WHERE Named = 'Megane';
+
+UPDATE CARMODEL
+SET NumberSold = 27 WHERE Named = 'Focus';
+
 -- DELETE
 DELETE FROM CARBRAND
 WHERE Named = 'Opel';
