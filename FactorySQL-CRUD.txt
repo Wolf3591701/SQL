@@ -4,7 +4,7 @@ USE Factory;
 
 CREATE TABLE CARBRAND (
 	Id uniqueidentifier PRIMARY KEY NOT NULL,
-	Named varchar(50) NOT NULL
+	BrandName varchar(50) NOT NULL
 );
 
 CREATE TABLE CARMODEL (
@@ -62,17 +62,12 @@ UPDATE CARMODEL
 SET Named = 'Fiesta'
 WHERE Named = 'Focus';
 
-ALTER TABLE CARMODEL ADD NumberSold int;
-
-UPDATE CARMODEL
-SET NumberSold = 50 WHERE Named = 'Corsa';
-
-UPDATE CARMODEL
-SET NumberSold = 150 WHERE Named = 'Megane';
-
-UPDATE CARMODEL
-SET NumberSold = 27 WHERE Named = 'Focus';
-
 -- DELETE
 DELETE FROM CARBRAND
 WHERE Named = 'Opel';
+
+CREATE VIEW "MODELOVERVIEW" AS (
+SELECT na.BrandName, nm.Named, nm.NumberSold
+FROM CARBRAND na
+INNER JOIN CARMODEL nm ON nm.CarBrandId=na.Id
+);
